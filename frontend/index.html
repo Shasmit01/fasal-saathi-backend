@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fasal Saathi - AI Price Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            transition: background 0.3s ease;
+        }
+
+        /* ===== LOGIN PAGE ===== */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 40px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== DASHBOARD PAGE ===== */
+        .dashboard-container {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container.hidden {
+            display: none;
+        }
+
+        .navbar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .navbar-brand span {
+            color: #667eea;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .welcome-section h2 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .predictor-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .predictor-section h3 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .predictor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .predictor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group-large {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group-large label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .predict-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+            align-self: flex-end;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-container {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        .result-crop {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-price {
+            color: #667eea;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-alert {
+            background: #fadbd8;
+            color: #c0392b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-alert.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .predictor-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section,
+            .predictor-section {
+                padding: 20px;
+            }
+
+            .predict-btn {
+                align-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="logo">🌾</div>
+                <h1>Fasal Saathi</h1>
+                <p>AI-Powered Agricultural Price Predictor</p>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                    <div class="error-msg" id="usernameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <div class="error-msg" id="passwordError"></div>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+                <div class="error-msg" id="loginError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage" class="dashboard-container hidden">
+        <nav class="navbar">
+            <div class="navbar-brand">🌾 <span>Fasal Saathi</span></div>
+            <div class="navbar-user">
+                <span class="user-name" id="displayUsername">User</span>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2>Welcome to Fasal Saathi! 👋</h2>
+                <p>Get accurate price predictions for your crops using AI-powered forecasting. Select a crop below to see the predicted market price.</p>
+            </div>
+
+            <div class="predictor-section">
+                <h3>📊 Price Predictor</h3>
+                
+                <div class="predictor-grid">
+                    <div class="form-group-large">
+                        <label for="cropSelect">Select Crop</label>
+                        <select id="cropSelect">
+                            <option value="">-- Choose a crop --</option>
+                            <option value="Tomato">🍅 Tomato</option>
+                            <option value="Onion">🧅 Onion</option>
+                            <option value="Potato">🥔 Potato</option>
+                            <option value="Rice">🍚 Rice</option>
+                            <option value="Wheat">🌾 Wheat</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button class="predict-btn" onclick="predictPrice()">Get Prediction</button>
+                    </div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing market data...</p>
+                </div>
+
+                <div class="result-container" id="resultContainer">
+                    <div class="result-crop" id="resultCrop"></div>
+                    <div class="result-price" id="resultPrice">₹ --</div>
+                    <div class="result-label">Predicted Price (Next 7 Days Average)</div>
+                </div>
+
+                <div class="error-alert" id="errorAlert"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle Login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            
+            // Basic validation
+            if (username.length < 3) {
+                showError("usernameError", "Username must be at least 3 characters");
+                return;
+            }
+            
+            if (password.length < 4) {
+                showError("passwordError", "Password must be at least 4 characters");
+                return;
+            }
+            
+            // Simulate successful login
+            localStorage.setItem("username", username);
+            goToDashboard(username);
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.style.display = "block";
+            setTimeout(() => {
+                errorEl.style.display = "none";
+            }, 3000);
+        }
+
+        function goToDashboard(username) {
+            document.getElementById("loginPage").classList.add("hidden");
+            document.getElementById("dashboardPage").classList.remove("hidden");
+            document.getElementById("displayUsername").textContent = username;
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("username");
+            document.getElementById("loginPage").classList.remove("hidden");
+            document.getElementById("dashboardPage").classList.add("hidden");
+            document.getElementById("loginForm").reset();
+            document.getElementById("resultContainer").classList.remove("show");
+            document.getElementById("errorAlert").classList.remove("show");
+        }
+
+        // Price Prediction
+        async function predictPrice() {
+            const crop = document.getElementById("cropSelect").value;
+            
+            if (!crop) {
+                showAlert("Please select a crop", "error");
+                return;
+            }
+            
+            const loading = document.getElementById("loading");
+            const resultContainer = document.getElementById("resultContainer");
+            const errorAlert = document.getElementById("errorAlert");
+            
+            loading.classList.add("show");
+            resultContainer.classList.remove("show");
+            errorAlert.classList.remove("show");
+            
+            try {
+                const response = await fetch("http://127.0.0.1:8000/forecast/" + crop);
+                
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+                
+                const data = await response.json();
+                
+                // Simulate network delay for better UX
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                document.getElementById("resultCrop").textContent = crop;
+                document.getElementById("resultPrice").textContent = "₹ " + data.predicted_price;
+                
+                loading.classList.remove("show");
+                resultContainer.classList.add("show");
+                
+            } catch (error) {
+                loading.classList.remove("show");
+                showAlert("Unable to connect to the server. Make sure the API is running.", "error");
+            }
+        }
+
+        function showAlert(message, type) {
+            const errorAlert = document.getElementById("errorAlert");
+            errorAlert.textContent = message;
+            errorAlert.classList.add("show");
+            
+            setTimeout(() => {
+                errorAlert.classList.remove("show");
+            }, 4000);
+        }
+
+        // Check if user is already logged in
+        window.addEventListener("load", () => {
+            const username = localStorage.getItem("username");
+            if (username) {
+                goToDashboard(username);
+            }
+        });
+    </script>
+</body>
+</html>
